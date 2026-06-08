@@ -9,17 +9,19 @@ class SessionParser:
             print("Invalid session")
             self.session_id = None
             return
-        ses = unquote(ses)
+        # ses = unquote(ses)
 
-        ses_json = json.loads(ses)
+        # ses_json = json.loads(ses)
 
-        jwt = ses_json["accessToken"]
-        self.jwt = jwt
+        # jwt = ses_json["accessToken"]
+        # self.jwt = jwt
 
-        jwt_data = base64.urlsafe_b64decode(jwt.split(".")[1] + '=' * (4 - len(jwt) % 4))
-        jwt_data_json = json.loads(jwt_data)
+        # jwt_data = base64.urlsafe_b64decode(jwt.split(".")[1] + '=' * (4 - len(jwt) % 4))
+        # jwt_data_json = json.loads(jwt_data)
 
-        self.session_id = jwt_data_json["sessionId"]
+        # self.session_id = jwt_data_json["sessionId"]
+        self.jwt = ses # In the new api we directly get the JWT
+        self.session_id = ses
 
     def get_jwt(self):
         return self.jwt
