@@ -4,35 +4,30 @@ import requests
 
 
 def get_session_token(username: str, password: str):
-    loginData = {"uporabnik": username, "geslo": password}
-    s = requests.Session()
+    url = "https://www.easistent.com/m/login"
 
-    login = s.post("https://www.easistent.com/p/ajax_prijava", data=loginData)
-    if not login.ok:
-        return None
-    if json.loads(login.text)["status"] != "ok":
-        return None
-
-    cookies = login.cookies.get_dict()
-
-    easistent_auth_token = cookies["easistent_auth_token"]
-    easistent_session = cookies["easistent_session"]
-
-    url = "https://www.easistent.com/webapp"
-
+    payload = json.dumps({
+    "username": username,
+    "password": password,
+    "supported_user_types": [
+        "parent",
+        "child",
+        "parent_of_pre_enrolled"
+    ]
+    })
     headers = {
-        'easistent_cookie': 'zapri',
-        'k8seasistent': '1',
-        'k8skom': '1',
-        'easistent_session': easistent_session,
-        'easistent_auth_token': easistent_auth_token,
-
+    'x-child-id': '662787',
+    'x-client-platform': 'web',
+    'x-client-version': '13',
+    'x-app-name': 'null',
+    'Content-Type': 'application/json',
     }
 
-    response = requests.request("GET", url, headers=headers, data={}, allow_redirects=False, cookies=cookies)
-    new_url = response.headers["location"]
-    response = requests.request("GET",new_url, headers={}, data={}, allow_redirects=False)
+    response = requests.request("POST", url, headers=headers, data=payload)
 
-    return response.cookies.get_dict()["ses"]
+    if not response.ok:
+        return None
+
+    return response.json()["access_token"]["token"]
 
 
